@@ -11,7 +11,7 @@ const char* password = "qwertyuiop";
 
 WebServer server(80);
 
-#define API_KEY "AIzaSyBZ8Nq2nNilQwvfCRho-EIdy2P5IDE2Fao"
+#define API_KEY ""
 #define DATABASE_URL "https://smart-dustbin-app-67e52-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
 #define LED_PIN 4
