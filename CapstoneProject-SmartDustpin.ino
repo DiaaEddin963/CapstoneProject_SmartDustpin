@@ -145,10 +145,41 @@ void setup() {
   config.api_key = API_KEY;
   config.database_url = DATABASE_URL;
 
+  
   if (Firebase.signUp(&config, &auth, "", "")) {
     Serial.println("Firebase Auth Successful");
+    String camUrl = "http://" + WiFi.localIP().toString() + "/last_cap";
+
+    if (Firebase.RTDB.setString(&fbdo, "/smartDustbin/cameraUrl", camUrl)) {
+      Serial.println("Camera URL updated in Firebase!");
+    } else {
+      Serial.println("Failed to update Camera URL: " + fbdo.errorReason());
+    }
   } else {
     Serial.printf("Firebase Auth Failed: %s\n", config.signer.signupError.message.c_str());
+  }
+
+  Firebase.begin(&config, &auth);
+  Firebase.reconnectWiFi(true);
+
+  fbdo.setBSSLBufferSize(2048, 512); 
+
+  Serial.println("Waiting for Firebase to be ready...");
+  delay(3000); 
+
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
+  Serial.println("========================\n");
+
+  if (Firebase.ready()) {
+    String camUrl = "http://" + WiFi.localIP().toString() + "/last_cap";
+    if (Firebase.RTDB.setString(&fbdo, "/smartDustbin/cameraUrl", camUrl)) {
+      Serial.println("Camera URL updated in Firebase successfully!");
+    } else {
+      Serial.println("Failed to update Camera URL: " + fbdo.errorReason());
+    }
+  } else {
+    Serial.println("Firebase is not ready yet! Token generation might still be in progress.");
   }
 
   Firebase.begin(&config, &auth);
