@@ -17,6 +17,7 @@ WebServer server(80);
 #define LED_PIN 4
 #define PIN_RECYCLABLE 12
 #define PIN_GENERAL 13
+#define ARDUINO_RX_PIN 14
 
 FirebaseData fbdo;
 FirebaseAuth auth;
@@ -110,6 +111,7 @@ bool detect_motion() {
 
 void setup() {
   Serial.begin(115200);
+  Serial1.begin(9600, SERIAL_8N1, ARDUINO_RX_PIN, -1);
   last_jpeg_buf = (uint8_t*)ps_malloc(256000);
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
@@ -224,6 +226,28 @@ void setup() {
 }
 
 void loop() {
+
+  if (Serial1.available()) {
+  String data = Serial1.readStringUntil('\n');
+  data.trim();
+  
+  int firstComma = data.indexOf(',');
+  int secondComma = data.indexOf(',', firstComma + 1);
+  
+  if (firstComma > 0 && secondComma > 0) {
+    int recycle_pct = data.substring(0, firstComma).toInt();
+    int general_pct = data.substring(firstComma + 1, secondComma).toInt();
+    int gas_val = data.substring(secondComma + 1).toInt();
+    
+    String gasLevel = (gas_val > 400) ? "Danger" : "Safe";
+    String smellLevel = (gas_val > 400) ? "Bad" : "Good";
+
+    Firebase.RTDB.setInt(&fbdo, "/smartDustbin/recyclableWaste", recycle_pct);
+    Firebase.RTDB.setInt(&fbdo, "/smartDustbin/generalWaste", general_pct);
+    Firebase.RTDB.setString(&fbdo, "/smartDustbin/gasLevel", gasLevel);
+    Firebase.RTDB.setString(&fbdo, "/smartDustbin/smellLevel", smellLevel);
+  }
+}
   server.handleClient();
 
   if (!is_inferencing && detect_motion()) {
