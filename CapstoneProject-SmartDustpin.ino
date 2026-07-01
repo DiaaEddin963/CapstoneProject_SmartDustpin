@@ -212,6 +212,7 @@ void setup() {
   });
   server.on("/last_cap", [] {
     if (last_jpeg_len > 0) {
+      server.sendHeader("Access-Control-Allow-Origin", "*");
       server.setContentLength(last_jpeg_len);
       server.send(200, "image/jpeg", "");
       server.client().write(last_jpeg_buf, last_jpeg_len);
