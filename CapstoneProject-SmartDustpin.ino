@@ -5,6 +5,7 @@
 #include <Firebase_ESP_Client.h>
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
+#include "edge-impulse-sdk/dsp/image/image.hpp"   
 
 const char* ssid = "HONO";
 const char* password = "qwertyuiop";
