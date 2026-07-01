@@ -310,7 +310,7 @@ void loop() {
       Serial.println(last_result);
       Serial.println("=============================\n");
 
-      if (Firebase.RTDB.setString(&fbdo, "/SmartBin/CurrentResult", last_result)) {
+      if (Firebase.RTDB.setString(&fbdo, "/smartDustbin/CurrentResult", last_result)) {
         Serial.println("Successfully pushed to Firebase");
       } else {
         Serial.println("Firebase Push Failed: " + fbdo.errorReason());
